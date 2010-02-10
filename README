@@ -1,0 +1,40 @@
+# Copyright (c) 2010, Kilari Vamsi
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice,
+# this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation and/or other
+# materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+# EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+# EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+c = CpanelDbUtil.new(cpanel_username, cpanel_pass,IP/domain_name,db_type)
+
+eg:
+ c = CpanelDbUtil.new('kilari', 'xxxxxxxx','0.0.0.0','mysql')
+ 
+Instance menthods
+1)list_dbs -> Returns an array of db's.
+2)list_db_users -> Returns an array of db users.
+3)list_db_priv(db_name) -> Returns an array of user's added the db name passed.
+4)create_db(db_name) -> create a DB with the DB name passed.
+5)create_db_user(db_user,pass) -> Created a DB user with the username passed. password is optional.
+6)reset_user_pass(db_user,pass) -> To reset the DB user password. Password if optional.
+7)assign_user2db(db_name,db_user) -> To assign a user to a DB.
+8)del_db(db_name) -> To delete a DB.
+9)del_user(db_user) -> To delete a DB user.
+
+Return message for 4-9 methods is a hash of {:status => 'true/false', :message => ''} 
