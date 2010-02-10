@@ -20,21 +20,30 @@
 # ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+NOTE: Currently this supports only x3 theme.
 
+===========================================================================================================================
+******Database Utility Functons******
+===========================================================================================================================
 c = CpanelDbUtil.new(cpanel_username, cpanel_pass,IP/domain_name,db_type)
 
-eg:
- c = CpanelDbUtil.new('kilari', 'xxxxxxxx','0.0.0.0','mysql')
- 
-Instance menthods
-1)list_dbs -> Returns an array of db's.
-2)list_db_users -> Returns an array of db users.
-3)list_db_priv(db_name) -> Returns an array of user's added the db name passed.
-4)create_db(db_name) -> create a DB with the DB name passed.
-5)create_db_user(db_user,pass) -> Created a DB user with the username passed. password is optional.
-6)reset_user_pass(db_user,pass) -> To reset the DB user password. Password if optional.
-7)assign_user2db(db_name,db_user) -> To assign a user to a DB.
-8)del_db(db_name) -> To delete a DB.
-9)del_user(db_user) -> To delete a DB user.
+By default it makes use of port 2083(https). Can also pass port number if running on any other ports/2082(http)
 
-Return message for 4-9 methods is a hash of {:status => 'true/false', :message => ''} 
+eg:
+c = CpanelDbUtil.new('kilari', 'xxxxxxxx','0.0.0.0','mysql',2082)
+ 
+Instance methods
+1)list_dbs -> Returns an array of database's.
+2)list_db_users -> Returns an array of database users.
+3)list_db_priv(db_name) -> Returns an array of user's added the database name passed.
+4)create_db(db_name) -> create a database with the database name passed.
+5)create_db_user(db_user,pass) -> Created a database user with the username passed. Random password will be generated if not passed.
+6)reset_user_pass(db_user,pass) -> To reset the database user password. Random password will be generated if not passed.
+7)assign_user2db(db_name,db_user) -> To assign a user to a database.
+8)del_db(db_name) -> To delete a database.
+9)del_user(db_user) -> To delete a database user.
+
+Return message for 4-9 methods is a hash of {:status => 'true/false', :message => '',:pass => '',:db => 'DB name', :user => 'DB user'}
+
+'pass','db','user' key pairs are returned when required in the funtions.
+===========================================================================================================================

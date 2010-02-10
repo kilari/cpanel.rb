@@ -53,7 +53,7 @@ class CpanelDbUtil < CpanelAPI
         doc = Hpricot(post(@file_name[:create_db][@db_type],{:db => "#{db_name}"}).body) ##To grab any other type of errors like limit exceeded
         error = doc/"p.errors"
         if error.size == 0
-          return_msg(true, "DB #{full_db_name} created successfully")
+          return_msg(true, "DB #{full_db_name} created successfully",:db => "#{full_db_name}")
         else
           error_msg = doc/"div.details"
           error_msg = error_msg.to_s.to_a
@@ -79,13 +79,13 @@ class CpanelDbUtil < CpanelAPI
         return return_msg(false, 'Username should only be alphanumeric') unless /^[A-Za-z0-9]*$/ =~ db_user
         if list_db_users.include?(full_db_user) && current_method == 'reset_user_pass'
           post(@file_name[:create_user][@db_type],{:user => "#{db_user}",:pass => "#{pass}", :pass2 => "#{pass}"})
-         return return_msg(true,"Password for the database user #{full_db_user} has been reset to #{pass}",:pass => "#{pass}")
+         return return_msg(true,"Password for the database user #{full_db_user} has been reset to #{pass}",{:user => "#{full_db_user}",:pass => "#{pass}"})
         elsif current_method == 'reset_user_pass'
           return return_msg(false, "Could not find the DB user #{full_db_user}")
         end  
         if current_method == 'create_db_user'
           post(@file_name[:create_user][@db_type],{:user => "#{db_user}",:pass => "#{pass}", :pass2 => "#{pass}"})
-          return_msg(true, "Added a database user #{full_db_user} with password #{pass}",:pass => "#{pass}")
+          return_msg(true, "Added a database user #{full_db_user} with password #{pass}",{:user => "#{full_db_user}",:pass => "#{pass}"})
         end  
       end  
     else
@@ -105,7 +105,7 @@ class CpanelDbUtil < CpanelAPI
     if list_dbs.include?(db_name) && list_db_users.include?(db_user)
       post(@file_name[:assign_user2db][@db_type], {:db => "#{db_name}", :user => "#{db_user}",'ALL' => 'ALL'})
       if list_db_priv(db_name).include? db_user
-        return_msg(true, "Added DB user #{db_user} to the DB #{db_name}")
+        return_msg(true, "Added DB user #{db_user} to the DB #{db_name}",{:user => "#{db_user}",:db => "#{db_name}"})
       else
         return_msg(false, "Could not add the user #{db_user} to the DB #{db_name}")
       end
