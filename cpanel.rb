@@ -66,16 +66,16 @@ class CpanelAPI
     end
   end
   
-  def random
+  def random(n=20)
     key = ''
     char = ('a'..'z').to_a
-    1.upto(20){key << char[rand(char.size-1)]}
+    1.upto(n){key << char[rand(char.size-1)]}
     key
   end
   
   def json_url(cpanel_user,module_name,func_name,options='')
     options.insert(0,'&') unless options == ''
-    url = "/json-api/cpanel?user=#{cpanel_user}&cpanel_jsonapi_module=#{module_name}&cpanel_jsonapi_func=#{func_name}#{options}"
+    "/json-api/cpanel?user=#{cpanel_user}&cpanel_jsonapi_module=#{module_name}&cpanel_jsonapi_func=#{func_name}#{options}"
   end
   
   def return_msg(status,msg,options={})
@@ -86,12 +86,9 @@ class CpanelAPI
     end
   end
   
-  def get_data(data)
-    data['cpanelresult']['data']
-  end
-  
-  def parse(reply)
-    JSON.parse(reply.body)
+  def parseAndFormatReply(reply)
+    parsed = JSON.parse(reply.body)
+    parsed['cpanelresult']['data']
   end
   
   class DbNameSizeError < StandardError;end
@@ -108,7 +105,7 @@ class CpanelAPI
     
   class DbNotFoundError < StandardError;end  
   
-  private :get, :post, :random, :json_url, :return_msg, :get_data, :parse
-  
+  private :get, :post, :random, :json_url, :return_msg, :parseAndFormatReply
+    
 end
 

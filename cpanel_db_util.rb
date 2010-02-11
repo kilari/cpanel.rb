@@ -1,3 +1,26 @@
+# Copyright (c) 2010, Kilari Vamsi
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice,
+# this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation and/or other
+# materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+# EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+# EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 require 'cpanel.rb'
 
 class CpanelDbUtil < CpanelAPI
@@ -9,15 +32,11 @@ class CpanelDbUtil < CpanelAPI
     @db_type=db_type.to_sym
     @file_name ={:create_db => {:mysql => 'sql/addb.html',:psql => 'psql/addbs.html'}, :create_user => {:mysql => 'sql/adduser.html',:psql => 'psql/addusers.html'}, :assign_user2db => {:mysql => 'sql/addusertodb.html',:psql => 'psql/addusertodb.html'}, :del_db => {:mysql => 'sql/deldb.html', :psql => 'psql/deldb.html'}, :del_user => {:mysql => 'sql/deluser.html', :psql => 'psql/deluser.html'}, :api => {:mysql => 'MysqlFE', :psql => 'Postgres'} }
   end  
-   
-  def db_type=(db_type)
-    @db_type = db_type.to_sym
-  end
   
   def list_dbs
     url = json_url(@cpanel_user,@file_name[:api][@db_type],'listdbs')
-    reply = parse(get(url))
-    db_data = get_data(reply)
+    reply = get(url)
+    db_data = parseAndFormatReply(reply)
     db_list = []
     db_data.each{|x| db_list<< x['db']}
     db_list
@@ -25,8 +44,8 @@ class CpanelDbUtil < CpanelAPI
  
   def list_db_users
     url = json_url(@cpanel_user,@file_name[:api][@db_type],'listusers')
-    reply = parse(get(url))
-    db_data = get_data(reply)
+    reply = get(url)
+    db_data = parseAndFormatReply(reply)
     db_users = []
     db_data.each{|x| db_users<< x['user']}
     db_users
@@ -35,8 +54,8 @@ class CpanelDbUtil < CpanelAPI
   def list_db_priv(db)
     db = add_cpanel_user_name(db)
     url = json_url(@cpanel_user,@file_name[:api][@db_type],'listusersindb',"db=#{db}")
-    reply = parse(get(url))
-    db_data = get_data(reply)
+    reply = get(url)
+    db_data = parseAndFormatReply(reply)
     db_users = []
     db_data.each{|x| db_users<< x['user']}
     db_users
@@ -138,8 +157,6 @@ class CpanelDbUtil < CpanelAPI
     end
   end
   
-  private
-  
   def remove_cpanel_user_name(name)
     unless name.scan(/^#{@cpanel_user}_/).empty?
       name.split(/#{@cpanel_user}_/)[1] 
@@ -156,6 +173,8 @@ class CpanelDbUtil < CpanelAPI
       name_dup.insert(0,"#{@cpanel_user}_")
     end
   end
+  
+  private :remove_cpanel_user_name, :add_cpanel_user_name
   
 end
 

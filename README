@@ -25,14 +25,15 @@ NOTE: Currently this supports only x3 theme.
 ===========================================================================================================================
 ******Database Utility Functons******
 ===========================================================================================================================
-c = CpanelDbUtil.new(cpanel_username, cpanel_pass,IP/domain_name,db_type)
+c = CpanelDbUtil.new(cpanel_username, cpanel_pass,IP/domain_name,db_type,port)
 
+The default for db_type is mysql. Can pass 'psql' for postgresql. 
 By default it makes use of port 2083(https). Can also pass port number if running on any other ports/2082(http)
 
 eg:
 c = CpanelDbUtil.new('kilari', 'xxxxxxxx','0.0.0.0','mysql',2082)
  
-Instance methods
+Utility methods
 1)list_dbs -> Returns an array of database's.
 2)list_db_users -> Returns an array of database users.
 3)list_db_priv(db_name) -> Returns an array of user's added the database name passed.
@@ -44,6 +45,34 @@ Instance methods
 9)del_user(db_user) -> To delete a database user.
 
 Return message for 4-9 methods is a hash of {:status => 'true/false', :message => '',:pass => '',:db => 'DB name', :user => 'DB user'}
-
 'pass','db','user' key pairs are returned when required in the funtions.
+
+Database username's and Database name are prefixed with the cPanel user name(like kilari_dbname), so while passing the DB name or Username you can pass the whole name(like kilari_dbname) or just the excluding the cPanel name(like dbname).
 ===========================================================================================================================
+
+
+
+===========================================================================================================================
+******Domain Utility Functons******
+===========================================================================================================================
+CpanelDomainUtil.new(cpanel_username, cpanel_pass,IP/domain_name)
+
+eg: CpanelDomainUtil.new('kilari','xxxxxxx','0.0.0.0')
+
+Utility methods
+1)list_domains -> Return an array if addon,parked,main domains.
+2)get_doc_root(domain_name) -> Returns the absolute path for the domain's document root.
+3)list_park_domains -> Returns and array of the parked domains.
+4)list_addon_domains -> Returns and array of addon domains.
+5)list_sub_domains -> Returns and array of sub domains.
+6)main_domain -> Returns the main domain of the account.
+7)is_park_domain?(domain_name)
+8)is_addon_domain?(domain_name)
+9)is_sub_domain?(domain_name)
+10)is_main_domain?(domain_name)
+11)park_domain(domain_name) -> Park a domain
+12)add_addon_domain(domain_name,doc_root,ftp_user,pass) -> Add a addon domain
+13)add_sub_domain(sub_domain_name,main_domain,pass) -> Add a sub domain
+14)del_park_domain(domain_name) -> Delete a parked domain
+15)del_addon_domain(domain_name) -> Delete a add on domain
+16)del_sub_domain(domain_name) -> Delete a sub domain
