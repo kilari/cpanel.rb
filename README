@@ -26,14 +26,15 @@ NOTE: Currently this supports only x3 theme.
 c = Cpanel.new(cpanel_username, cpanel_pass,IP/domain_name,port)
 
 eg:
-c = CpanelDbUtil.new('kilari', 'xxxxxxxx','kilari.co.in')
+c = Cpanel.new('kilari', 'xxxxxxxx','kilari.co.in')
+c = Cpanel.new('kilari', 'xxxxxxxx','74.63.8.201')
 
 By default it will take port 2083(https).
 
 
-===========================================================================================================================
+========================================================================================================================
 ******Database Utility Functons******
-===========================================================================================================================
+========================================================================================================================
 First you will need to set the Database type 'mysql/psql'
 
 c.db_type = :mysql or c.db_type = :psql
@@ -54,13 +55,13 @@ Return message for 4-9 methods is a hash of {:status => 'true/false', :message =
 'pass','db','user' key pairs are returned when required in the funtions.
 
 Database username's and Database name are prefixed with the cPanel user name(like kilari_dbname), so while passing the DB name or Username you can pass the whole name(like kilari_dbname) or just the excluding the cPanel name(like dbname).
-===========================================================================================================================
+========================================================================================================================
 
 
 
-===========================================================================================================================
+========================================================================================================================
 ******Domain Utility Functons******
-===========================================================================================================================
+========================================================================================================================
 
 Public instance methods
 1)list_domains -> Return an array if addon,parked,main domains.

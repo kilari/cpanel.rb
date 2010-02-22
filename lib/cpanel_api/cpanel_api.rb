@@ -7,8 +7,8 @@ rescue LoadError
   abort "Could not load json/hpricot gem(s). Check if they are installed."
 end
 
-require 'cpanel_api/cpanel_db_util'
-require 'cpanel_api/cpanel_domain_util'
+require File.dirname(__FILE__) + '/cpanel_db_util'
+require File.dirname(__FILE__) + '/cpanel_domain_util'
 
 module CpanelAPI
   include CpanelDbUtil

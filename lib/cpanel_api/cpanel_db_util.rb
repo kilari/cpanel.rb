@@ -17,7 +17,9 @@ module CpanelAPI
       db_data.each{|x| db_list<< x['db']}
       db_list
     end
- 
+
+    alias list_db list_dbs
+     
     def list_db_users
       url = json_url(@cpanel_user,@db_file_name[:api][@db_type],'listusers')
       reply = get(url)
@@ -36,6 +38,8 @@ module CpanelAPI
       db_data.each{|x| db_users<< x['user']}
       db_users
     end
+
+    alias list_db_privs list_db_priv
   
     def create_db(db_name)
       db_name = remove_cpanel_user_name(db_name)
@@ -111,6 +115,14 @@ module CpanelAPI
           return_msg(false, "Could not find the DB user #{db_user}")
         end
       end  
+    end
+
+    def is_db?(db_name)
+
+    end
+
+    def is_db_user?(db_user)
+
     end
 
     def del_db(db_name)
