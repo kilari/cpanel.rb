@@ -27,7 +27,7 @@ module CpanelAPI
     if res.code == '200'
       res
     else
-      raise LoginCredentialsError, res.message
+      raise res.message
     end
   end
   
@@ -39,7 +39,7 @@ module CpanelAPI
     if res.code == '200'
       res
     else
-      raise LoginCredentialsError, res.message
+      raise res.message
     end
   end
   
