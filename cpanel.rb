@@ -195,6 +195,10 @@ module CpanelAPI
       list_db_priv(db_name).include? add_cpanel_user_name(db_user)
     end
 
+    def is_user?(db_user)
+      list_db_users.include? add_cpanel_user_name(db_user)
+    end
+
     def del_db(db_name)
       db_name = add_cpanel_user_name(db_name)
       if list_dbs.include? db_name
