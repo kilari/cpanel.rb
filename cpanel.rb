@@ -188,11 +188,11 @@ module CpanelAPI
     end
 
     def is_db?(db_name)
-
+      list_dbs.include? add_cpanel_user_name(db_name)
     end
 
-    def is_db_user?(db_user)
-
+    def is_db_user?(db_user,db_name)
+      list_db_priv(db_name).include? add_cpanel_user_name(db_user)
     end
 
     def del_db(db_name)
