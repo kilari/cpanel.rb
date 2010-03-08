@@ -29,6 +29,8 @@ module CpanelAPI
     else
       raise res.message
     end
+  rescue Errno::ECONNREFUSED
+    abort "Check the Cpanel user/pass and try again!"
   end
   
   def post(path,data,theme='x3')
@@ -41,6 +43,8 @@ module CpanelAPI
     else
       raise res.message
     end
+  rescue Errno::ECONNREFUSED
+    abort "Check the Cpanel user/pass and try again!"
   end
   
   def random(n=20)
