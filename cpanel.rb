@@ -25,7 +25,8 @@ module CpanelAPI
     req.basic_auth @cpanel_user, @cpanel_pass
     res = @connection.request(req)
     if res.code == '200'
-      res
+      parsed = JSON.parse(res.body)
+      parsed['cpanelresult']['data']
     else
       raise res.message
     end
@@ -67,12 +68,7 @@ module CpanelAPI
     end
   end
   
-  def parseAndFormatReply(reply)
-    parsed = JSON.parse(reply.body)
-    parsed['cpanelresult']['data']
-  end
-  
-  private :get, :post, :random, :json_url, :return_msg, :parseAndFormatReply
+  private :get, :post, :random, :json_url, :return_msg
     
   module CpanelDbUtil
   
@@ -85,32 +81,23 @@ module CpanelAPI
   
     def list_dbs
       url = json_url(@cpanel_user,@db_file_name[:api][@db_type],'listdbs')
-      reply = get(url)
-      db_data = parseAndFormatReply(reply)
-      db_list = []
-      db_data.each{|x| db_list<< x['db']}
-      db_list
+      
+      get(url).inject([]) { |m,db| m << db['db']}
     end
 
     alias list_db list_dbs
      
     def list_db_users
       url = json_url(@cpanel_user,@db_file_name[:api][@db_type],'listusers')
-      reply = get(url)
-      db_data = parseAndFormatReply(reply)
-      db_users = []
-      db_data.each{|x| db_users<< x['user']}
-      db_users
+      
+      get(url).inject([]) { |m,db| m << db['user']}
     end
   
     def list_db_priv(db)
       db = add_cpanel_user_name(db)
       url = json_url(@cpanel_user,@db_file_name[:api][@db_type],'listusersindb',"db=#{db}")
-      reply = get(url)
-      db_data = parseAndFormatReply(reply)
-      db_users = []
-      db_data.each{|x| db_users<< x['user']}
-      db_users
+
+      get(url).inject([]) { |m,db| m << db['user']}
     end
 
     alias list_db_privs list_db_priv
@@ -250,45 +237,33 @@ module CpanelAPI
     def list_domains
       #parked domains, addon domains, and main domains
       url = json_url(@cpanel_user,'DomainLookup','getbasedomains')
-      reply = get(url)
-      data = parseAndFormatReply(reply)
-      list = []
-      data.each{|x| list<<x['domain']}
-      list
+      
+      get(url).inject([]) { |m,x| x['domain']}
     end
   
     def get_doc_root(domain)
       url = json_url(@cpanel_user,'DomainLookup','getdocroot',"domain=#{domain}")
-      reply = get(url)
-      data = parseAndFormatReply(reply)
+      data = get(url)
+
       data[0]['docroot']
     end
   
     def list_park_domains
       url = json_url(@cpanel_user,'Park','listparkeddomains')
-      reply = get(url)
-      data = parseAndFormatReply(reply)
-      list = []
-      data.each{|x| list<<x['domain']}
-      list
+      
+      get(url).inject([]) { |m, x| m << x['domain'] }
     end
   
     def list_addon_domains
       url = json_url(@cpanel_user,'AddonDomain','listaddondomains')
-      reply = get(url)
-      data = parseAndFormatReply(reply)
-      list = []
-      data.each{|x| list<<x['domain']}
-      list
+      
+      get(url).inject([]) { |m,x| m << x['domain'] }
     end
   
     def list_sub_domains
       url = json_url(@cpanel_user,'SubDomain','listsubdomains')
-      reply = get(url)
-      data = parseAndFormatReply(reply)
-      list = []
-      data.each{|x| list<<x['domain']}
-      list
+      
+      get(url).inject([]) { |m,x| m << x['domain'] }
     end
   
     def main_domain
@@ -318,8 +293,7 @@ module CpanelAPI
       domain = scan_domain_name(domain)
       unless is_park_domain?(domain)
         url = json_url(@cpanel_user,'Park','park',"domain=#{domain}")
-        reply = get(url)
-        data = parseAndFormatReply(reply)
+        data = get(url)
         if data[0]['result'] == 1
           return_msg(true,data[0]['reason'],:domain_name => "#{domain}")
         else
@@ -342,8 +316,7 @@ module CpanelAPI
       ftp_user = (domain.split('.')[0]+random(4)) if ftp_user == ''
       unless is_addon_domain?(domain)
         url = json_url(@cpanel_user,'AddonDomain','addaddondomain',"newdomain=#{domain}&dir=#{dir}&subdomain=#{ftp_user}&pass=#{pass}")
-        reply = get(url)
-        data = parseAndFormatReply(reply)
+        data = get(url)
         if data[0]['result'] == 1
           return_msg(true,"Domain #{domain} added successfully",{:domain_name => "#{domain}",:pass => "#{pass}",:doc_root => "#{dir}",:ftp_user => "#{ftp_user}"})
         else
@@ -367,8 +340,7 @@ module CpanelAPI
       full_sub_domain = domain+'.'+rootdomain
       unless is_sub_domain?(full_sub_domain)
         url = json_url(@cpanel_user,'SubDomain','addsubdomain',"domain=#{domain}&rootdomain=#{rootdomain}&dir=#{dir}")
-        reply = get(url)
-        data = parseAndFormatReply(reply)
+        data = get(url)
         if data[0]['result'] == 1
           return_msg(true,"Sub-domain #{full_sub_domain} added successfully",:domain_name => "#{full_sub_domain}")
         else
@@ -388,8 +360,7 @@ module CpanelAPI
     def del_park_domain(domain)
       domain = scan_domain_name(domain)
       url = json_url(@cpanel_user,'Park','unpark',"domain=#{domain}")
-      reply = get(url)
-      data = parseAndFormatReply(reply)
+      data = get(url)
       if data[0]['result'] == 1
         return_msg(true,'Removed successfully',:domain_name => "#{domain}")
       else
@@ -400,8 +371,7 @@ module CpanelAPI
     def del_addon_domain(domain)
       domain = scan_domain_name(domain)
       url = json_url(@cpanel_user,'AddonDomain','deladdondomain',"domain=#{domain}")
-      reply = get(url)
-      data = parseAndFormatReply(reply)
+      data = get(url)
       if data[0]['result'] == 1
         puts data[0]['reason']
         return_msg(true,data[0]['reason'],:domain_name => "#{domain}")
@@ -414,8 +384,8 @@ module CpanelAPI
     def del_sub_domain(domain)
       domain = scan_domain_name(domain)
       url = json_url(@cpanel_user,'SubDomain','delsubdomain',"domain=#{domain}")
-      reply = get(url)
-      data = parseAndFormatReply(reply)
+      data = get(url)
+
       if data[0]['result'] == 1
         puts data[0]['reason']
         return_msg(true,data[0]['reason'],:domain_name => "#{domain}")
